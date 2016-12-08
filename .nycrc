@@ -1,0 +1,18 @@
+{
+    "include": [
+        "lib/*.ts",
+        "lib/**/*.ts"
+    ],
+    "exclude": [
+        "lib/**/index.ts"
+    ],
+    "extension": [
+        ".ts"
+    ],
+    "reporter": [
+        "lcov",
+        "text"
+    ],
+    "sourceMap": true,
+    "instrument": true
+}
