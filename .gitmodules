@@ -1,9 +1,0 @@
-[submodule "node_modules/spirit.io"]
-	path = node_modules/spirit.io
-	url = https://github.com/spirit-io/spirit.io.git
-[submodule "node_modules/spirit.io-mongodb-connector"]
-	path = node_modules/spirit.io-mongodb-connector
-	url = https://github.com/spirit-io/spirit.io-mongodb-connector.git
-[submodule "node_modules/spirit.io-redis-connector"]
-	path = node_modules/spirit.io-redis-connector
-	url = https://github.com/spirit-io/spirit.io-redis-connector.git
