@@ -39,7 +39,6 @@ export class AdminServer extends Server {
                 // Setup routes for authentication
                 auth.setup(this);
                 console.log("========== Server initialized ============\n");
-                this.start(this.config.expressPort);
             });
 
         }).catch(err => {
@@ -47,5 +46,9 @@ export class AdminServer extends Server {
         })
 
         return this;
+    }
+
+    start(port?: number) {
+        super.start(port || this.config.expressPort);
     }
 }
