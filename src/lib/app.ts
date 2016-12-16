@@ -1,22 +1,19 @@
-/// <reference path="node_modules/spirit.io/index.d.ts" />
-import { _ } from 'streamline-runtime';
 import { Server } from 'spirit.io/lib/application';
 import { MongodbConnector } from 'spirit.io-mongodb-connector/lib/connector';
 import { RedisConnector } from 'spirit.io-redis-connector/lib/connector';
 
-import * as sessions from './lib/sessions';
-import * as auth from './lib/auth';
+import * as sessions from './sessions';
+import * as auth from './auth';
 
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
 export class AdminServer extends Server {
-    constructor(config: any) {
+    constructor(config?: any) {
+        if (!config) config = require('./config').config;
         super(config);
 
-        this.on('initialized', () => {
-            console.log("========== Server initialized ============\n");
-        });
+
         console.log("\n========== Initialize server begins ============");
         let mongoConnector = new MongodbConnector(config.connectors.mongodb);
         this.addConnector(mongoConnector);
@@ -26,22 +23,25 @@ export class AdminServer extends Server {
         this.addConnector(redisConnector);
         console.log("Redis sessions connector config: " + JSON.stringify(redisConnector.config, null, 2));
 
-        this.contract.registerModelsByPath(path.resolve(path.join(__dirname, './lib/models')));
+        this.contract.registerModelsByPath(path.resolve(path.join(__dirname, './models')));
     }
 
-    init(_: _) {
+    init() {
 
         // load models
-        super.init(_);
+        super.init();
 
-        this.app.set('trust proxy', 1)
-        this.app.use(cookieParser());
-        // Create session store
-        sessions.initSessionStore(this.app, this.config);
+        this.on('initialized', () => {
+            console.log("========== Server initialized ============\n");
+            this.app.set('trust proxy', 1)
+            this.app.use(cookieParser());
+            // Create session store
+            sessions.initSessionStore(this.app, this.config);
 
-        // Setup routes for authentication
-        auth.setup(_, this);
-
+            // Setup routes for authentication
+            auth.setup(this);
+            this.start(this.config.expressPort);
+        });
         return this;
     }
 

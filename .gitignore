@@ -1,16 +1,9 @@
-# Logs
-logs
-*.log
+coverage
+node_modules
+lib/*
+test/*
+**/*.js.map
+.nyc_output
 npm-debug.log*
 
-# Coverage directory used by tools like istanbul
-coverage
 
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-node_modules
-
-# Optional npm cache directory
-.npm

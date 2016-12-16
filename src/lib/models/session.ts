@@ -9,10 +9,9 @@ export class Session extends ModelBase {
     user: string;
     data: Object;
 
-    static destroy(_, params: any): Object {
+    static destroy(params: any): Object {
         let store = sessions.getSessionStore();
-        let res = store.destroy(params._id, _);
-        console.log("RES/", res)
+        let res = store.destroy(params._id);
         return {
             $diagnoses: [{
                 $severity: "success",

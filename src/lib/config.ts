@@ -14,6 +14,9 @@ const REDIS_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT;
 const SECRET = process.env.SPIRIT_SESSIONS_SECRET || 'spirit.io';
 
 exports.config = {
+    system: {
+        exposeStack: true
+    },
     expressPort: HTTP_PORT,
     connectors: {
         mongodb: {
@@ -46,7 +49,7 @@ exports.config = {
     sessions: {
         secret: SECRET,
         cookieName: 's.io.admin.sid',
-        connector: 'redis-admin',
+        connector: 'redis-sessions',
         redis: {
             ttl: 12000
         }

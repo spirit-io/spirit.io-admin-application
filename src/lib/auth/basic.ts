@@ -1,15 +1,15 @@
-import { _ } from 'streamline-runtime';
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { IModelHelper } from 'spirit.io/lib/interfaces';
 import { AdminHelper } from 'spirit.io/lib/core';
 import * as helper from './helper';
 import { IAuthModule } from './interfaces';
 import { HttpError } from 'spirit.io/lib/common';
+import { User } from '../models/user';
 
 let singleton: Basic;
 
 class Basic implements IAuthModule {
-    authenticate(req: Request, res: Response, _: _): string {
+    authenticate(req: Request, res: Response, next: NextFunction): string {
 
         let credentials = /^basic\s([\w\+\/]+\=*)/i.exec(req.headers['authorization']);
         if (!credentials || credentials.length === 0) throw helper.unauthorized();
@@ -19,9 +19,8 @@ class Basic implements IAuthModule {
         let parts = str.split(':');
         var login = parts[0];
         var pwd = parts[1];
-
-        let userHelper: IModelHelper = AdminHelper.model('User');
-        let user = userHelper.fetchInstance(_, { login: login });
+        let userHelper: IModelHelper = AdminHelper.model(User);
+        let user: User = userHelper.fetchInstance({ login: login });
         if (!user) throw new Error(`User '${login}' not found`);
         let salt = user.salt;
         let truePwd = user.password;
@@ -31,7 +30,7 @@ class Basic implements IAuthModule {
     }
 }
 
-module.exports = function () {
+module.exports = function() {
     if (singleton) return singleton;
     singleton = new Basic();
     return singleton;

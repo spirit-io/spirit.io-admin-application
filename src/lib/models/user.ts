@@ -1,4 +1,3 @@
-import { _ } from 'streamline-runtime';
 import { collection, unique, required, index, reverse, embedded, invisible, hook } from 'spirit.io/lib/decorators';
 import { ModelBase } from 'spirit.io/lib/base';
 import { IModelHelper } from 'spirit.io/lib/interfaces';
@@ -24,16 +23,16 @@ export class User extends ModelBase {
     @unique @required
     email: string;
 
-    @required @invisible
+    @required @invisible(true)
     password: string;
 
-    @invisible
+    @invisible(true)
     salt: string;
 
     role: Role;
 
     @hook('beforeSave')
-    static beforeSave(_, user: User) {
+    static beforeSave(user: User) {
         let helper: IModelHelper = AdminHelper.model('User');
         if (user.isModified('password') || user.getMetadata('$isCreated')) {
             var salt = authHelper.genRandomString(16); /** Gives us salt of length 16 */

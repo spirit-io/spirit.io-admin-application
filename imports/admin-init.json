@@ -1,0 +1,10 @@
+{
+    "User": [
+        {
+            "login": "admin",
+            "password": "admin",
+            "lastName": "Administrator",
+            "email": "admin@admin-spirit.io.com"
+        }
+    ]
+}

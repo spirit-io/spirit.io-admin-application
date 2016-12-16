@@ -1,15 +1,15 @@
-import { _ } from 'streamline-runtime';
-import { Application, Request, Response } from "express";
+import { Application, Request, Response, NextFunction } from "express";
 import { ModelRegistry } from 'spirit.io/lib/core';
 import { ModelFactory as RedisFactory } from 'spirit.io-redis-connector/lib/modelFactory';
 import * as helper from '../auth/helper';
+import { run } from 'f-promise';
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const debug = require('debug')('spirit.io-admin:sessions');
 
 let sessionStore: any;
 
-export function ensureAuthenticated(req: Request, res: Response, _: _) {
+export function ensureAuthenticated(req: Request, res: Response, next?: NextFunction) {
 
     // provide the data that was used to authenticate the request; if this is 
     // not set then no attempt to authenticate is registered. 
@@ -28,34 +28,32 @@ export function ensureAuthenticated(req: Request, res: Response, _: _) {
         let authMethod = req.headers['authorization'].split(' ')[0].toLowerCase();
         debug(`New session created with authentication ${authMethod}`);
         let authModule = getAuthModule(authMethod);
-        req['authenticated'] = authModule.authenticate(req, res, _);
+        req['authenticated'] = authModule.authenticate(req, res);
         if (req['authenticated']) {
             debug(`Authentication succeeded for user ${req['authenticated']}`);
             req.session['user'] = req['authenticated'];
         }
     }
-
-
-
+    next && next();
 }
 
 export function initSessionStore(app: Application, config: any) {
     // Session middleware is registered first
     if (config.sessions) {
         let redisFactory = (<RedisFactory>ModelRegistry.getFactory('Session'));
-
+        if (!redisFactory) throw new Error("No redis factory registered for sessions");
         let options = config.sessions.redis = config.sessions.redis || {};
         options.logErrors = config.sessions.redis.logErrors != null ? config.sessions.redis.logErrors : true;
         options.prefix = "Session:";
         options.client = redisFactory.client;
         options.serializer = {
-            stringify: function (session: any) {
+            stringify: function(session: any) {
                 if (!session._id) session._id = session.id;
                 if (!session._createdAt) session._createdAt = new Date();
                 session._updatedAt = new Date();
                 return JSON.stringify(session);
             },
-            parse: function (session) {
+            parse: function(session) {
                 return JSON.parse(session);
             }
         }
@@ -75,29 +73,34 @@ export function initSessionStore(app: Application, config: any) {
             }
         });
         app.use(sessionMiddleware);
-        app.use(function (req: Request, res: Response, _: _) {
-            var tries = 3
+        app.use(function(req: Request, res: Response, next: NextFunction) {
+            run(() => {
+                var tries = 3
 
-            function lookupSession(error?: Error) {
-                if (error) {
-                    throw error;
+                function lookupSession(error?: Error) {
+                    if (error) {
+                        throw error;
+                    }
+
+                    tries -= 1
+
+                    if (req.session !== undefined) {
+                        return;
+                    }
+
+                    if (tries < 0) {
+                        throw new Error('Sessions handler not available');
+                    }
+
+                    sessionMiddleware(req, res, lookupSession)
                 }
 
-                tries -= 1
-
-                if (req.session !== undefined) {
-                    return;
-                }
-
-                if (tries < 0) {
-                    throw new Error('Sessions handler not available');
-                }
-
-                sessionMiddleware(req, res, lookupSession)
-            }
-
-            lookupSession()
-        } as any)
+                lookupSession();
+                next();
+            }).catch(e => {
+                next(e);
+            });
+        })
     } else {
         throw new Error("Redis session store is not configured. Please check your configuration file.");
     }
