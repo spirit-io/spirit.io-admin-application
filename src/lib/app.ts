@@ -1,48 +1,45 @@
 import { Server } from 'spirit.io/lib/application';
 import { MongodbConnector } from 'spirit.io-mongodb-connector/lib/connector';
 import { RedisConnector } from 'spirit.io-redis-connector/lib/connector';
-
 import * as sessions from './sessions';
 import * as auth from './auth';
+import * as importTool from './tools/import';
+import * as cookieParser from 'cookie-parser';
+import * as path from 'path';
 
-const cookieParser = require('cookie-parser');
-const path = require('path');
+import * as debug from 'debug';
+const trace = debug('sio-admin:app');
+
 
 export class AdminServer extends Server {
     constructor(config?: any) {
         if (!config) config = require('./config').config;
         super(config);
-
-
-        console.log("\n========== Initialize server begins ============");
         let mongoConnector = new MongodbConnector(config.connectors.mongodb);
         this.addConnector(mongoConnector);
-        console.log("Mongo connector config: " + JSON.stringify(mongoConnector.config, null, 2));
+        trace("Mongo connector config: ", JSON.stringify(mongoConnector.config, null, 2));
 
         let redisConnector = new RedisConnector(config.connectors.redis);
         this.addConnector(redisConnector);
-        console.log("Redis sessions connector config: " + JSON.stringify(redisConnector.config, null, 2));
+        trace("Redis connector config: ", JSON.stringify(redisConnector.config, null, 2));
 
         this.contract.registerModelsByPath(path.resolve(path.join(__dirname, './models')));
     }
 
-    init() {
+    start() {
+        // import required initial data
+        if (process.env.SPIRIT_ADMIN_INIT) {
+            console.log("Import admin initialization data...")
+            importTool.imports(path.join(__dirname, '../imports/admin-init.json'));
+        }
+        this.app.set('trust proxy', 1)
+        this.app.use(cookieParser());
+        // Create session store
+        sessions.initSessionStore(this.app, this.config);
 
-        // load models
-        super.init();
-
-        this.on('initialized', () => {
-            console.log("========== Server initialized ============\n");
-            this.app.set('trust proxy', 1)
-            this.app.use(cookieParser());
-            // Create session store
-            sessions.initSessionStore(this.app, this.config);
-
-            // Setup routes for authentication
-            auth.setup(this);
-            this.start(this.config.expressPort);
-        });
-        return this;
+        // Setup routes for authentication
+        auth.setup(this);
+        super.start(this.config.expressPort);
     }
 
 }

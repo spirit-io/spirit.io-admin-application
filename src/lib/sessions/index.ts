@@ -3,9 +3,11 @@ import { ModelRegistry } from 'spirit.io/lib/core';
 import { ModelFactory as RedisFactory } from 'spirit.io-redis-connector/lib/modelFactory';
 import * as helper from '../auth/helper';
 import { run } from 'f-promise';
-const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
-const debug = require('debug')('spirit.io-admin:sessions');
+import * as session from 'express-session';
+import * as connectRedis from 'connect-redis';
+import * as debug from 'debug';
+const RedisStore = connectRedis(session);
+const trace = debug('sio-admin:sessions');
 
 let sessionStore: any;
 
@@ -14,23 +16,23 @@ export function ensureAuthenticated(req: Request, res: Response, next?: NextFunc
     // provide the data that was used to authenticate the request; if this is 
     // not set then no attempt to authenticate is registered. 
     //    req['challenge'] = req.get('Authorization');
-    debug("============================================================");
-    debug("Session: ", (req.session && req.session.id) + ': ' + JSON.stringify(req.session, null, 2));
+    trace("============================================================");
+    trace("Session: ", (req.session && req.session.id) + ': ' + JSON.stringify(req.session, null, 2));
 
     if (req.session['user']) {
         req['authenticated'] = req.session['user'];
-        debug(`User '${req.session['user']}' reused session ${req.session.id}`);
+        trace(`User '${req.session['user']}' reused session ${req.session.id}`);
 
     }
 
     // If the authorization header is correct, mark the request as being authenticated
     else if (req.headers['authorization']) {
         let authMethod = req.headers['authorization'].split(' ')[0].toLowerCase();
-        debug(`New session created with authentication ${authMethod}`);
+        trace(`New session created with authentication ${authMethod}`);
         let authModule = getAuthModule(authMethod);
         req['authenticated'] = authModule.authenticate(req, res);
         if (req['authenticated']) {
-            debug(`Authentication succeeded for user ${req['authenticated']}`);
+            trace(`Authentication succeeded for user ${req['authenticated']}`);
             req.session['user'] = req['authenticated'];
         }
     }
@@ -47,13 +49,13 @@ export function initSessionStore(app: Application, config: any) {
         options.prefix = "Session:";
         options.client = redisFactory.client;
         options.serializer = {
-            stringify: function(session: any) {
+            stringify: function (session: any) {
                 if (!session._id) session._id = session.id;
                 if (!session._createdAt) session._createdAt = new Date();
                 session._updatedAt = new Date();
                 return JSON.stringify(session);
             },
-            parse: function(session) {
+            parse: function (session) {
                 return JSON.parse(session);
             }
         }
@@ -73,7 +75,7 @@ export function initSessionStore(app: Application, config: any) {
             }
         });
         app.use(sessionMiddleware);
-        app.use(function(req: Request, res: Response, next: NextFunction) {
+        app.use(function (req: Request, res: Response, next: NextFunction) {
             run(() => {
                 var tries = 3
 

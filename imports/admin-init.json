@@ -6,5 +6,11 @@
             "lastName": "Administrator",
             "email": "admin@admin-spirit.io.com"
         }
+    ],
+    "Role": [
+        {
+            "code": "admin",
+            "description": "Administrator"
+        }
     ]
 }

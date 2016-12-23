@@ -21,16 +21,16 @@ class Basic implements IAuthModule {
         var pwd = parts[1];
         let userHelper: IModelHelper = AdminHelper.model(User);
         let user: User = userHelper.fetchInstance({ login: login });
-        if (!user) throw new Error(`User '${login}' not found`);
+        if (!user) throw new HttpError(401, `User '${login}' not found`);
         let salt = user.salt;
         let truePwd = user.password;
         var shaPwd = helper.sha512(pwd, salt);
-        if (shaPwd.hash !== truePwd) throw new Error("Wrong password !");
+        if (shaPwd.hash !== truePwd) throw new HttpError(401, "Wrong password !");
         return login;
     }
 }
 
-module.exports = function() {
+module.exports = function () {
     if (singleton) return singleton;
     singleton = new Basic();
     return singleton;

@@ -1,9 +1,8 @@
-import { collection, route } from 'spirit.io/lib/decorators';
-import { Application, Request, Response } from 'express';
+import { model } from 'spirit.io/lib/decorators';
 import { ModelBase } from 'spirit.io/lib/base';
 import * as sessions from '../sessions';
 
-@collection({ datasource: 'redis:sessions' })
+@model({ datasource: 'redis:sessions' })
 export class Session extends ModelBase {
     cookie: Object;
     user: string;
@@ -11,7 +10,7 @@ export class Session extends ModelBase {
 
     static destroy(params: any): Object {
         let store = sessions.getSessionStore();
-        let res = store.destroy(params._id);
+        store.destroy(params._id);
         return {
             $diagnoses: [{
                 $severity: "success",

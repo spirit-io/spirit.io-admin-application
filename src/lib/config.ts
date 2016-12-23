@@ -53,5 +53,13 @@ exports.config = {
         redis: {
             ttl: 12000
         }
+    },
+    debug: {
+        sio: {
+            factory: true
+        },
+        'sio-admin': {
+            app: true
+        }
     }
 };

@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { HttpError } from 'spirit.io/lib/common';
 
 const crypto = require('crypto');
