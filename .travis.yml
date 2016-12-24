@@ -8,3 +8,6 @@ notifications:
     on_success: change
     on_failure: change
 after_success: 'npm run coveralls'
+services:
+  - redis
+  - mongodb
