@@ -33,7 +33,8 @@
     "f-promise": "^1.0.4",
     "mz": "^2.6.0",
     "spirit.io": "^1.0.9",
-    "spirit.io-mongodb-connector": "^1.0.0"
+    "spirit.io-mongodb-connector": "^1.0.6",
+    "spirit.io-redis-connector": "^1.0.6"
   },
   "devDependencies": {
     "@types/chai": "^3.4.34",
@@ -42,6 +43,7 @@
     "@types/express": "^4.0.34",
     "@types/express-session": "0.0.32",
     "@types/mocha": "^2.2.32",
+    "@types/mongoose": "^4.7.2",
     "@types/node": "^6.0.51",
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
