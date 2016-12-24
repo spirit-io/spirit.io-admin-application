@@ -57,6 +57,16 @@ const config = {
 export class Fixtures extends GlobalFixtures {
 
     static setup = (done) => {
+        function reset() {
+            // delete the whole database
+            let mConnector: MongodbConnector = <MongodbConnector>ConnectorHelper.getConnector('mongodb');
+            let rConnector: RedisConnector = <RedisConnector>ConnectorHelper.getConnector('redis');
+            Fixtures.cleanDatabases([mConnector, rConnector]);
+            // import data necessary for unit test
+            importTool.imports(path.join(__dirname, '../../imports/admin-init.json'));
+
+        }
+
         let firstSetup = true;
         if (!context().__server) {
             let server: AdminServer = context().__server = new AdminServer(config);
@@ -76,25 +86,22 @@ export class Fixtures extends GlobalFixtures {
             server.on('started', function () {
                 run(() => {
                     console.log("========== Server started ============\n");
-                    // import data necessary for unit test
-                    importTool.imports(path.join(__dirname, '../../imports/admin-init.json'));
-                    // this call activates f-mocha wrapper.
+                    reset();
                     done();
                 }).catch(err => {
                     done(err);
                 });
             });
         } else {
-            firstSetup = false;
+            run(() => {
+                firstSetup = false;
+                reset();
+                done();
+            }).catch(err => {
+                done(err);
+            });
         }
         //
-        // delete the whole database
-        let mConnector: MongodbConnector = <MongodbConnector>ConnectorHelper.getConnector('mongodb');
-        let rConnector: RedisConnector = <RedisConnector>ConnectorHelper.getConnector('redis');
-        Fixtures.cleanDatabases([mConnector, rConnector]);
-
-        //
-        if (!firstSetup) done();
         return context().__server;
     }
 }
