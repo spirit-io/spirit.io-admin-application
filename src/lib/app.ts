@@ -39,7 +39,7 @@ export class AdminServer extends Server {
 
         // Setup routes for authentication
         auth.setup(this);
-        super.start(port || this.config.expressPort);
+        super.start(port || this.config.port);
     }
 
 }

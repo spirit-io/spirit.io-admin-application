@@ -1,5 +1,5 @@
 import { Application, Request, Response, NextFunction } from "express";
-import { ModelRegistry } from 'spirit.io/lib/core';
+import { Registry } from 'spirit.io/lib/core';
 import { ModelFactory as RedisFactory } from 'spirit.io-redis-connector/lib/modelFactory';
 import * as helper from '../auth/helper';
 import { run } from 'f-promise';
@@ -42,7 +42,7 @@ export function ensureAuthenticated(req: Request, res: Response, next?: NextFunc
 export function initSessionStore(app: Application, config: any) {
     // Session middleware is registered first
     if (config.sessions) {
-        let redisFactory = (<RedisFactory>ModelRegistry.getFactory('Session'));
+        let redisFactory = (<RedisFactory>Registry.getFactory('Session'));
         if (!redisFactory) throw new Error("No redis factory registered for sessions");
         let options = config.sessions.redis = config.sessions.redis || {};
         options.logErrors = config.sessions.redis.logErrors != null ? config.sessions.redis.logErrors : true;

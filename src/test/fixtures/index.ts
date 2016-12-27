@@ -20,7 +20,8 @@ const config = {
             datasources: {
                 "mongodb": {
                     uri: 'mongodb://localhost:' + mongodbPort + '/spirit_admin_test',
-                    options: {}
+                    options: {},
+                    autoConnect: true
                 }
             },
             mongoose: {
@@ -71,6 +72,7 @@ export class Fixtures extends GlobalFixtures {
         if (!context().__server) {
             let server: AdminServer = context().__server = new AdminServer(config);
             run(() => {
+                ConnectorHelper.getConnector('redis').connect('redis:sessions');
                 server.init();
             }).catch(err => {
                 done(err);

@@ -17,7 +17,7 @@ exports.config = {
     system: {
         exposeStack: true
     },
-    expressPort: HTTP_PORT,
+    port: HTTP_PORT,
     connectors: {
         mongodb: {
             datasources: {
