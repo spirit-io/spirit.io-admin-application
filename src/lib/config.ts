@@ -23,7 +23,8 @@ exports.config = {
             datasources: {
                 "mongodb": {
                     uri: MONGO_URL,
-                    options: {}
+                    options: {},
+                    autoConnect: true
                 }
             },
             mongoose: {
@@ -34,11 +35,13 @@ exports.config = {
             datasources: {
                 "redis:admin": {
                     uri: REDIS_URL + "/1",
-                    options: {}
+                    options: {},
+                    autoConnect: true
                 },
                 "redis:sessions": {
                     uri: REDIS_URL,
-                    options: {}
+                    options: {},
+                    autoConnect: true
                 }
             },
             client: {

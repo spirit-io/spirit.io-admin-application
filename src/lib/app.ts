@@ -21,8 +21,12 @@ export class AdminServer extends Server {
         let redisConnector = new RedisConnector(config.connectors.redis);
         this.addConnector(redisConnector);
         trace("Redis connector config: ", JSON.stringify(redisConnector.config, null, 2));
-        this.contract.registerModelsByPath(path.resolve(path.join(__dirname, './models')));
 
+    }
+
+    init() {
+        this.contract.registerModelsByPath(path.resolve(path.join(__dirname, './models')));
+        return super.init();
     }
 
     start(port?: number) {
