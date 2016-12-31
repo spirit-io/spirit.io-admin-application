@@ -1,4 +1,5 @@
 "use strict";
+
 const fpromise = require('f-promise');
 let AdminServer = require('./lib/app').AdminServer;
 let app = new AdminServer();

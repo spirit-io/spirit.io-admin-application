@@ -3,7 +3,7 @@ import { IModelHelper } from 'spirit.io/lib/interfaces';
 import { AdminHelper } from 'spirit.io/lib/core';
 import * as helper from './helper';
 import { IAuthModule } from './interfaces';
-import { HttpError } from 'spirit.io/lib/common';
+import { HttpError } from 'spirit.io/lib/utils';
 import { User } from '../models/user';
 
 let singleton: Basic;

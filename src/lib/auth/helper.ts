@@ -1,4 +1,4 @@
-import { HttpError } from 'spirit.io/lib/common';
+import { HttpError } from 'spirit.io/lib/utils';
 
 const crypto = require('crypto');
 

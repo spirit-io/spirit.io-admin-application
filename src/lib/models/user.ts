@@ -1,4 +1,5 @@
-import { model, unique, required, invisible, hook } from 'spirit.io/lib/decorators';
+import { model, required, invisible, hook } from 'spirit.io/lib/decorators';
+import { unique } from 'spirit.io-mongodb-connector/lib/decorators';
 import { ModelBase } from 'spirit.io/lib/base';
 import * as authHelper from '../auth/helper';
 import { Role } from './role';
