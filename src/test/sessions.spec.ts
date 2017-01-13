@@ -27,7 +27,7 @@ describe('Sessions tests:', () => {
         expect(roles[0].code).to.equal('admin');
         expect(roles[0].description).to.equal('Administrator');
 
-        let users: User[] = AdminHelper.model(User).fetchInstances();
+        let users: any[] = AdminHelper.model(User).fetchInstances();
         expect(users.length).to.equal(1);
         expect(users[0].login).to.equal('admin');
         expect(users[0].salt).to.be.not.null;

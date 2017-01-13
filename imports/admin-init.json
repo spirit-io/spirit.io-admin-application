@@ -2,9 +2,10 @@
     "User": [
         {
             "login": "admin",
-            "password": "admin",
             "lastName": "Administrator",
-            "email": "admin@admin-spirit.io.com"
+            "email": "admin@admin-spirit.io.com",
+            "salt": "35e5adc887d86fdb",
+            "password": "981cfb338575c9780cc40edcc0436d4af5778d0e03fd0fc75e795a01de7c34e686b141e42760486be21f236455fb01bc1fda8a9e8bde9279617cb66f026b6bf2"
         }
     ],
     "Role": [
