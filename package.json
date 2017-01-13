@@ -1,6 +1,6 @@
 {
   "name": "spirit.io-admin-application",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Administration application using spirit.io framework",
   "main": "index.js",
   "scripts": {
