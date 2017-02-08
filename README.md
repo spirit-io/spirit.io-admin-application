@@ -3,3 +3,11 @@
 
 # admin-spirit.io
 Administration spirit.io application
+
+
+## Generate certificate for https
+```sh
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 10000
+openssl rsa -in key.pem -out newkey.pem
+mv newkey.pem key.pem
+```
